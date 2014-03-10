@@ -19,7 +19,7 @@ if (!isset($_SESSION['success']))
 			$result_welcome=mysqli_query($connection,$query_welcome);
 			$row_welcome=mysqli_fetch_assoc($result_welcome);
 		?> 
-		<h1>Welcome <?= ucwords(strtolower($row_welcome['first_name'])).' '.ucwords(strtolower($row_welcome['last_name'])).'!'?></h1>
+		<h1 class="header">Welcome <?= ucwords(strtolower($row_welcome['first_name'])).' '.ucwords(strtolower($row_welcome['last_name'])).'!'?></h1>
 		<?php
 			if (isset($_SESSION['id1']['error1'])) 
 			{ ?>
@@ -138,5 +138,8 @@ if (!isset($_SESSION['success']))
 		margin-left: 130px;
 		color: red;
 		font-weight: bold;
+	}
+	.header{
+		margin-left: 400px;
 	}
 </style>
