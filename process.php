@@ -108,9 +108,9 @@ function register_validate($connection,$post)
 		$password=crypt($post['password'],$salt);
 		$query="INSERT INTO users (first_name,last_name,email,birth_date,password,created_at,updated_at,file_path)
 		 VALUES ('".mysqli_real_escape_string($connection,$post['first_name'])."','".mysqli_real_escape_string($connection,$post['last_name'])."','".mysqli_real_escape_string($connection,$post['email'])."','".mysqli_real_escape_string($connection,$birthdate)."','".mysqli_real_escape_string($connection,$password)."',now(),now(),'".mysqli_real_escape_string($connection,$newfilepath)."')";
-		echo $query;
+		// echo $query;
 		$result=mysqli_query($connection,$query);
-		var_dump($result); 
+		// var_dump($result); 
 		// $query1="SELECT id FROM users WHERE email=".$post['email'];
 		// $result1=mysqli_query($connection,$query1);
 		// var_dump($result1);
@@ -118,7 +118,7 @@ function register_validate($connection,$post)
 		// var_dump($row);
 		$user_id=mysqli_insert_id($connection);
 		$_SESSION['id']=$user_id;
-		// header('Location: post.php?id='.$user_id);
+		header('Location: post.php?id='.$user_id);
 	}else
 	{
 		header("Location: index_1.php");
@@ -188,6 +188,7 @@ function post_message($connection,$post)
 	{
 		$query="INSERT INTO messages (user_id,message,created_at,updated_at) VALUES (".$_SESSION['id'].",'".$post['message']."',now(),now())";
 		$result=mysqli_query($connection,$query);
+		unset($_SESSION['id1']);
 		header("Location:post.php?id=".$_SESSION['id']);
 
 	}
@@ -207,7 +208,30 @@ function post_comment($connection,$post)
 	}
 
 }
-
+function delete_message($connection)
+{
+	$query="SELECT id FROM messages WHERE user_id=".$_SESSION['id'];
+	$result=mysqli_query($connection,$query);
+	$row=mysqli_fetch_assoc($result);
+	var_dump($row);
+	if (!empty($row)) 
+	{
+		$query1="DELETE comments FROM comments left join messages
+		on comments.message_id=messages.id
+		WHERE messages.id=".$row['id']; 
+		echo $query1;
+		$result1=mysqli_query($connection,$query1);
+		$query2="DELETE FROM messages WHERE messages.id=".$row['id'];
+		echo $query2;
+		$result2=mysqli_query($connection,$query2);
+		// unset($_SESSION['id']['error_message']);
+	}
+	else
+	{
+		$_SESSION['id1']['error1']='No more message to delete';
+	}
+	// header("Location:post.php?id=".$_SESSION['id']);
+}
 
 if (isset($_POST['action'])&&$_POST['action']=='register') 
 {
@@ -230,7 +254,10 @@ if (isset($_POST['action'])&&$_POST['action']=='comment')
 {
 	post_comment($connection,$_POST);
 }
-
+if (isset($_POST['action'])&&$_POST['action']=='delete')
+{
+	delete_message($connection);
+}
 
 
 

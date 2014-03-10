@@ -1,10 +1,11 @@
 <?php
 session_start();
-var_dump($_GET);
+// var_dump($_GET);
+var_dump($_SESSION);
 require_once('connection.php');
 if (!isset($_SESSION['success'])) 
 {
-	// header("Location:/");
+	header("Location:/");
 }
 ?>
 <html>
@@ -13,35 +14,34 @@ if (!isset($_SESSION['success']))
 		<title>The Wall</title>
 	</head>
 	<body>
-	<!-- 	<?php
-		$query="SELECT first_name,last_name,file_path FROM users WHERE id=".$_GET['id'];
-		$result=mysqli_query($connection,$query);
-		var_dump($result);
-		$row=mysqli_fetch_assoc($result);
-		var_dump($row);
-		?>
-		<p>Welcome <?= ' '.$row['first_name'].' '.$row['last_name'].'!'?></p>
-		<img src="<?php echo $row['file_path']?>">
+		<?php 
+			$query_welcome="SELECT first_name,last_name FROM users WHERE users.id=".$_SESSION['id'];
+			$result_welcome=mysqli_query($connection,$query_welcome);
+			$row_welcome=mysqli_fetch_assoc($result_welcome);
+		?> 
+		<h1>Welcome <?= ucwords(strtolower($row_welcome['first_name'])).' '.ucwords(strtolower($row_welcome['last_name'])).'!'?></h1>
 		<?php
-		if (isset($_SESSION['success'])) 
-		{?>
-		<p><?= $_SESSION['success']?></p>
-			
-	<?php	}
-		?> -->
-		<form action='process.php' method="post">
-			<p>Message:</p>
-			<input type="hidden" name='action' value="message">
-			<textarea type='text' name="message"></textarea>
-			<input type='submit' value="Submit">
-		</form>
+			if (isset($_SESSION['id1']['error1'])) 
+			{ ?>
+			<p class='error1_message'><?= $_SESSION['id1']['error1']?></p>	
+		<?php }
+		?>
+		<div class='center'>
+			<form action='process.php' method="post">
+				<p id='message_title'>Post your Message:</p>
+				<input type="hidden" name="get_id" value="<?php echo $_GET['id'];?>">
+				<input type="hidden" name='action' value="message">
+				<textarea type='text' name="message" class='post_area'></textarea>
+				<input type='submit' value="Submit" class='button'>
+			</form>
+		</div>
 		<?php
 		$query="SELECT users.first_name as first_name,users.last_name as last_name,messages.id as m_id, messages.message as message,messages.created_at as m_date
 				FROM users
 				LEFT JOIN messages ON users.id=messages.user_id
 				Group by messages.id
 				order by messages.created_at desc";
-		echo $query;
+		// echo $query;
 		$result=mysqli_query($connection,$query);
 		while ($row=mysqli_fetch_assoc($result)) 
 		{?>
@@ -49,10 +49,10 @@ if (!isset($_SESSION['success']))
 		<?php
 			if (!empty($row['m_id'])) 
 			{ ?>
-
+		<div class='container'>
 			<div class="message">
-			<h1><?= $row['first_name'].' '.$row['last_name'].' '.$row['m_date']?></h1>
-			<p><?= $row['message']?></p>
+			<h1><?= ucwords(strtolower($row['first_name'])).' '.ucwords(strtolower($row['last_name'])).' at '.$row['m_date']?></h1>
+			<p class='message'><?= $row['message']?></p>
 			</div>
 			
 			<?php	$query1="SELECT users.first_name as first_name,users.last_name as last_name,comments.comment as comment,comments.created_at as c_date 
@@ -61,33 +61,82 @@ if (!isset($_SESSION['success']))
 					LEFT JOIN messages on messages.id=comments.message_id
 					WHERE messages.id=".$row['m_id']." 
 					order by comments.created_at asc";
-			echo $query1;
+			// echo $query1;
 			$result1=mysqli_query($connection,$query1);
-			var_dump($result1);
+			// var_dump($result1);
 			while ($row1=mysqli_fetch_assoc($result1)) 
 			{ ?>
 				<div class='comment'>
-				<p><?= $row1['first_name'].$row1['last_name'].$row1['c_date']?></p>
-				<p><?= $row1['comment']?></p>
+				<h6><?= ucwords(strtolower($row1['first_name'])).' '.ucwords(strtolower($row1['last_name'])).' at '.$row1['c_date']?></h6>
+				<p class='comment'><?= $row1['comment']?></p>
 				</div>
 			<?php	} ?>
-			<form action="process.php" method="post">
+			<form action="process.php" method="post" class='c_form'>
 				<p>Comments:</p>
 				<input type="hidden" name="action" value="comment">
 				<input type="hidden" name="message_id" value="<?php echo $row['m_id'];?>">
+				<input type='hidden' name='get_id' value="<?php echo $_GET['id'];?>">
 				<textarea type='text' name="comment"></textarea>
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" class='c_button'>
 			</form>	
+		</div>
 			<?php	} ?>
 			
 		<?php }
 
 		?>
+		<form action='process.php' method=post>
+			<input type='hidden' name='action' value='delete'>
+			<input type="submit" value='Delete One Message'>
+		</form>
 
-		
 		<form action='process.php' method=post>
 			<input type='hidden' name='action' value='log_out'>
 			<input type="submit" value='Log Out'>
 		</form>
+		
 	</body>
 </html>
+<style type="text/css">
+	.comment{
+		background-color: pink;
+		color: black;
+		font-size: 0.8em;
+		margin-left: 30px;
+	}
+	.message{
+		
+		font-size: 1.2em;
+
+	}
+	#message_title{
+		font-size: 1.5em;
+	}
+	.post_area{
+		width: 80%;
+		height: 100px;
+	}
+	.center{
+		margin-left: 10%;
+		width: 70%;
+	}
+	.button,.c_button{
+		display: block;	
+	}
+	.container{
+		margin-left: 150px;
+	}
+	.c_form{
+		position: relative;
+		left: 60%;
+	}
+	.c_form textarea{
+		width: 400px;
+		height: 50px;
+	}
+	.error1_message{
+		margin-left: 130px;
+		color: red;
+		font-weight: bold;
+	}
+</style>
