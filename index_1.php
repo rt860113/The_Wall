@@ -11,6 +11,8 @@ require_once('connection.php');
 </head>
 <body>
 	<?php
+	if (isset($_SESSION['error_type'])&&$_SESSION['error_type']=='register')
+	{
 		if (isset($_SESSION['error'])) 
 		{
 			foreach ($_SESSION['error'] as $name => $value) 
@@ -19,6 +21,7 @@ require_once('connection.php');
 			<p><?= $value;?></p>
 			<?php }
 		}
+	}
 	?>
 	<?php
 		if (isset($_SESSION['success'])) 
@@ -35,18 +38,31 @@ require_once('connection.php');
 			<input type='text' name='last_name' placeholder='Last Name'>
 			<input type='text' name='email' placeholder='Email Address'>
 			<input type='text' name='birthdate' placeholder='Birthdate'>
-			<input type='text' name='password' placeholder='Password'>
-			<input type='text' name='confirm_password' placeholder='Retype Your Password'>
+			<input type='password' name='password' placeholder='Password'>
+			<input type='password' name='confirm_password' placeholder='Retype Your Password'>
 			<input type="file" name='file'>
 			<input type='submit' value='Register'>
 		</form>
 	</div>
-		<div class='login'>
+	<?php
+	if (isset($_SESSION['error_type'])&&$_SESSION['error_type']=='login')
+	{
+		if (isset($_SESSION['error'])) 
+		{
+			foreach ($_SESSION['error'] as $name => $value) 
+			{?>
+			
+			<p><?= $value;?></p>
+			<?php }
+		}
+	}
+	?>
+	<div class='login'>
 		<form action='process.php' method='post'>
 			<p>Login In Here</p>
 			<input type='hidden' name='action' value='login'>
 			<input type='text' name='email' placeholder='Email'>
-			<input type='text' name='password' placeholder='Password'>
+			<input type='password' name='password' placeholder='Password'>
 			<input type='submit' value='Log In'>
 		</form>
 	</div>

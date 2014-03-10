@@ -2,11 +2,15 @@
 session_start();
 var_dump($_GET);
 require_once('connection.php');
+if (!isset($_SESSION['success'])) 
+{
+	// header("Location:/");
+}
 ?>
 <html>
 	<head>
 		<meta charset='utf-8'>
-		<title>Profile Page</title>
+		<title>The Wall</title>
 	</head>
 	<body>
 	<!-- 	<?php
@@ -32,39 +36,50 @@ require_once('connection.php');
 			<input type='submit' value="Submit">
 		</form>
 		<?php
-		$query="SELECT users.first_name as first_name,users.last_name as last_name,messages.id as m_id, messages.message as message,messages.created_at as m_date,
+		$query="SELECT users.first_name as first_name,users.last_name as last_name,messages.id as m_id, messages.message as message,messages.created_at as m_date
 				FROM users
 				LEFT JOIN messages ON users.id=messages.user_id
 				Group by messages.id
 				order by messages.created_at desc";
+		echo $query;
 		$result=mysqli_query($connection,$query);
 		while ($row=mysqli_fetch_assoc($result)) 
 		{?>
+			
+		<?php
+			if (!empty($row['m_id'])) 
+			{ ?>
+
 			<div class="message">
 			<h1><?= $row['first_name'].' '.$row['last_name'].' '.$row['m_date']?></h1>
 			<p><?= $row['message']?></p>
 			</div>
-		<?php	
-			$query1="SELECT users.first_name as first_name,users.last_name as last_name,comments.comment as comment,comments.created_at as c_date, FROM comments
+			
+			<?php	$query1="SELECT users.first_name as first_name,users.last_name as last_name,comments.comment as comment,comments.created_at as c_date 
+					FROM comments
 					LEFT JOIN users on users.id=comments.user_id
 					LEFT JOIN messages on messages.id=comments.message_id
-					WHERE comments.message_id=$row[m_id] 
+					WHERE messages.id=".$row['m_id']." 
 					order by comments.created_at asc";
+			echo $query1;
 			$result1=mysqli_query($connection,$query1);
+			var_dump($result1);
 			while ($row1=mysqli_fetch_assoc($result1)) 
 			{ ?>
 				<div class='comment'>
 				<p><?= $row1['first_name'].$row1['last_name'].$row1['c_date']?></p>
 				<p><?= $row1['comment']?></p>
 				</div>
-		<?php	} ?>
+			<?php	} ?>
 			<form action="process.php" method="post">
 				<p>Comments:</p>
 				<input type="hidden" name="action" value="comment">
-				<input type="hidden" name="message_id" value="<?= $row['m_date']?>">
+				<input type="hidden" name="message_id" value="<?php echo $row['m_id'];?>">
 				<textarea type='text' name="comment"></textarea>
 				<input type="submit" value="Submit">
-			</form>
+			</form>	
+			<?php	} ?>
+			
 		<?php }
 
 		?>

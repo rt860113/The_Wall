@@ -52,7 +52,6 @@ function register_validate($connection,$post)
 						}
 					}
 
-					
 					break;
 				case 'birthdate':
 					$t_birthdate=explode('/', $value);
@@ -94,13 +93,22 @@ function register_validate($connection,$post)
 		var_dump($newfile);
 		}
 	}
-	if (!isset($_SESSION['error']))
+	if (isset($_SESSION['error'])) 
 	{
+		$_SESSION['error_type']='register';
+	}
+	if (!isset($_SESSION['error']))
+	{	
+		if (!isset($newfilepath)) 
+		{
+			$newfilepath=null;
+		}
 		$_SESSION['success']='You are our member now.';
 		$salt=bin2hex(openssl_random_pseudo_bytes(22));
 		$password=crypt($post['password'],$salt);
-		$query="INSERT INTO users (first_name,last_name,email,birthdate,password,created_at,updated_at,file_path)
+		$query="INSERT INTO users (first_name,last_name,email,birth_date,password,created_at,updated_at,file_path)
 		 VALUES ('".mysqli_real_escape_string($connection,$post['first_name'])."','".mysqli_real_escape_string($connection,$post['last_name'])."','".mysqli_real_escape_string($connection,$post['email'])."','".mysqli_real_escape_string($connection,$birthdate)."','".mysqli_real_escape_string($connection,$password)."',now(),now(),'".mysqli_real_escape_string($connection,$newfilepath)."')";
+		echo $query;
 		$result=mysqli_query($connection,$query);
 		var_dump($result); 
 		// $query1="SELECT id FROM users WHERE email=".$post['email'];
@@ -110,7 +118,7 @@ function register_validate($connection,$post)
 		// var_dump($row);
 		$user_id=mysqli_insert_id($connection);
 		$_SESSION['id']=$user_id;
-		header('Location: post.php?id='.$user_id);
+		// header('Location: post.php?id='.$user_id);
 	}else
 	{
 		header("Location: index_1.php");
@@ -166,6 +174,7 @@ function log_in($connection,$post)
 		header('Location: post.php?id='.$row['id']);
 	}else
 	{
+		$_SESSION['error_type']='login';
 		header("Location:index_1.php");
 	}
 }
@@ -173,8 +182,9 @@ function post_message($connection,$post)
 {
 	if (empty($post['message'])) 
 	{
-		$_SESSION['error']['post_message']='Nothing in the message!'
-	}else
+		$_SESSION['error']['post_message']='Nothing in the message!';
+	}
+	else
 	{
 		$query="INSERT INTO messages (user_id,message,created_at,updated_at) VALUES (".$_SESSION['id'].",'".$post['message']."',now(),now())";
 		$result=mysqli_query($connection,$query);
@@ -186,10 +196,11 @@ function post_comment($connection,$post)
 {
 	if (empty($post['comment'])) 
 	{
-		$_SESSION['error']['post_comment']='Nothing in the message!'
+		$_SESSION['error']['post_comment']='Nothing in the message!';
 	}else
 	{
-		$query="INSERT INTO comments (message_id,user_id,message,created_at,updated_at) VALUES ("$post['message_id']",".$_SESSION['id'].",'".$post['message']."',now(),now())";
+		$query="INSERT INTO comments (message_id,user_id,comment,created_at,updated_at) VALUES (".$post['message_id'].",".$_SESSION['id'].",'".$post['comment']."',now(),now())";
+		echo $query;
 		$result=mysqli_query($connection,$query);
 		header("Location:post.php?id=".$_SESSION['id']);
 
