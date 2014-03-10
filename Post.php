@@ -65,7 +65,7 @@ require_once('connection.php');
 				<textarea type='text' name="comment"></textarea>
 				<input type="submit" value="Submit">
 			</form>
-		 }
+		<?php }
 
 		?>
 
@@ -76,6 +76,3 @@ require_once('connection.php');
 		</form>
 	</body>
 </html>
-<?php
-
-?>
