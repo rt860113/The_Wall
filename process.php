@@ -110,7 +110,7 @@ function register_validate($connection,$post)
 		// var_dump($row);
 		$user_id=mysqli_insert_id($connection);
 		$_SESSION['id']=$user_id;
-		header('Location: profile.php?id='.$user_id);
+		header('Location: post.php?id='.$user_id);
 	}else
 	{
 		header("Location: index_1.php");
@@ -163,11 +163,38 @@ function log_in($connection,$post)
 	{
 		$_SESSION['success']='Log in successfully.';
 		$_SESSION['id']=$row['id'];
-		header('Location: profile.php?id='.$row['id']);
+		header('Location: post.php?id='.$row['id']);
 	}else
 	{
 		header("Location:index_1.php");
 	}
+}
+function post_message($connection,$post)
+{
+	if (empty($post['message'])) 
+	{
+		$_SESSION['error']['post_message']='Nothing in the message!'
+	}else
+	{
+		$query="INSERT INTO messages (user_id,message,created_at,updated_at) VALUES (".$_SESSION['id'].",'".$post['message']."',now(),now())";
+		$result=mysqli_query($connection,$query);
+		header("Location:post.php?id=".$_SESSION['id']);
+
+	}
+}
+function post_comment($connection,$post)
+{
+	if (empty($post['comment'])) 
+	{
+		$_SESSION['error']['post_comment']='Nothing in the message!'
+	}else
+	{
+		$query="INSERT INTO comments (message_id,user_id,message,created_at,updated_at) VALUES ("$post['message_id']",".$_SESSION['id'].",'".$post['message']."',now(),now())";
+		$result=mysqli_query($connection,$query);
+		header("Location:post.php?id=".$_SESSION['id']);
+
+	}
+
 }
 
 
@@ -184,7 +211,14 @@ if (isset($_POST['action'])&&$_POST['action']=='log_out')
 	log_out();
 	header('Location:index_1.php');
 }
-
+if (isset($_POST['action'])&&$_POST['action']=='message') 
+{
+	post_message($connection,$_POST);
+}
+if (isset($_POST['action'])&&$_POST['action']=='comment') 
+{
+	post_comment($connection,$_POST);
+}
 
 
 

@@ -40,7 +40,7 @@ require_once('connection.php');
 		$result=mysqli_query($connection,$query);
 		while ($row=mysqli_fetch_assoc($result)) 
 		{?>
-			<div>
+			<div class="message">
 			<h1><?= $row['first_name'].' '.$row['last_name'].' '.$row['m_date']?></h1>
 			<p><?= $row['message']?></p>
 			</div>
@@ -53,7 +53,7 @@ require_once('connection.php');
 			$result1=mysqli_query($connection,$query1);
 			while ($row1=mysqli_fetch_assoc($result1)) 
 			{ ?>
-				<div>
+				<div class='comment'>
 				<p><?= $row1['first_name'].$row1['last_name'].$row1['c_date']?></p>
 				<p><?= $row1['comment']?></p>
 				</div>
@@ -61,6 +61,7 @@ require_once('connection.php');
 			<form action="process.php" method="post">
 				<p>Comments:</p>
 				<input type="hidden" name="action" value="comment">
+				<input type="hidden" name="message_id" value="<?= $row['m_date']?>">
 				<textarea type='text' name="comment"></textarea>
 				<input type="submit" value="Submit">
 			</form>
@@ -76,5 +77,5 @@ require_once('connection.php');
 	</body>
 </html>
 <?php
-$_SESSION=array();
+
 ?>
