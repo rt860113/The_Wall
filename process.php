@@ -210,27 +210,33 @@ function post_comment($connection,$post)
 }
 function delete_message($connection)
 {
-	$query="SELECT id FROM messages WHERE user_id=".$_SESSION['id'];
+	$query="SELECT id,time_to_sec(timediff(now(),created_at))/60 FROM messages WHERE user_id=".$_SESSION['id'];
+	echo $query;
 	$result=mysqli_query($connection,$query);
 	$row=mysqli_fetch_assoc($result);
 	var_dump($row);
 	if (!empty($row)) 
 	{
-		$query1="DELETE comments FROM comments left join messages
-		on comments.message_id=messages.id
-		WHERE messages.id=".$row['id']; 
-		echo $query1;
-		$result1=mysqli_query($connection,$query1);
-		$query2="DELETE FROM messages WHERE messages.id=".$row['id'];
-		echo $query2;
-		$result2=mysqli_query($connection,$query2);
-		// unset($_SESSION['id']['error_message']);
+		if ($row['time_to_sec(timediff(now(),created_at))/60']<30) 
+		{
+			$query1="DELETE comments FROM comments left join messages
+			on comments.message_id=messages.id
+			WHERE messages.id=".$row['id']; 
+			echo $query1;
+			$result1=mysqli_query($connection,$query1);
+			$query2="DELETE FROM messages WHERE messages.id=".$row['id'];
+			echo $query2;
+			$result2=mysqli_query($connection,$query2);
+		}else
+		{
+			$_SESSION['id1']['error1']="You can't delete the message which is created more than 30 minutes ago.";
+		}
 	}
 	else
 	{
 		$_SESSION['id1']['error1']='No more message to delete';
 	}
-	// header("Location:post.php?id=".$_SESSION['id']);
+	header("Location:post.php?id=".$_SESSION['id']);
 }
 
 if (isset($_POST['action'])&&$_POST['action']=='register') 

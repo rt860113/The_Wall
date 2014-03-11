@@ -1,7 +1,7 @@
 <?php
 session_start();
 // var_dump($_GET);
-var_dump($_SESSION);
+// var_dump($_SESSION);
 require_once('connection.php');
 if (!isset($_SESSION['success'])) 
 {
@@ -117,7 +117,7 @@ if (!isset($_SESSION['success']))
 		height: 100px;
 	}
 	.center{
-		margin-left: 10%;
+		margin-left: 12%;
 		width: 70%;
 	}
 	.button,.c_button{
