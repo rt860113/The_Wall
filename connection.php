@@ -5,7 +5,8 @@ define("DB_PASS", "root");
 define("DB_DATABASE", "the_wall");
 $connection=mysqli_connect(DB_HOST,DB_USER,DB_PASS,DB_DATABASE);
 // var_dump($connection);
-if (mysqli_connect_errno()) {
+if (mysqli_connect_errno()) 
+{
 	echo "error connecting to database.<br>";
 	echo mysqli_connect_errno();
 }

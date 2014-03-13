@@ -234,7 +234,26 @@ function delete_message($connection)
 	}
 	else
 	{
-		$_SESSION['id1']['error1']='No more message to delete';
+		$_SESSION['id1']['error1']='No more message to delete.';
+	}
+	header("Location:post.php?id=".$_SESSION['id']);
+}
+function delete_comment($connection,$post)
+{
+	$query="SELECT comments.id as id FROM comments 
+			LEFT JOIN messages ON comments.message_id=messages.id
+			WHERE comments.user_id=".$_SESSION['id']." AND messages.id=".$post['message_id'];
+	echo $query;
+	$result=mysqli_query($connection,$query);
+	$row=mysqli_fetch_assoc($result);
+	if (!empty($row)) 
+	{
+		$query1="DELETE comments FROM comments WHERE id=".$row['id'];
+		$result1=mysqli_query($connection,$query1);
+		unset($_SESSION['id1']['error2']);
+	}else
+	{
+		$_SESSION['id1']['error2']='No more comment to delete for this message.';
 	}
 	header("Location:post.php?id=".$_SESSION['id']);
 }
@@ -260,12 +279,12 @@ if (isset($_POST['action'])&&$_POST['action']=='comment')
 {
 	post_comment($connection,$_POST);
 }
-if (isset($_POST['action'])&&$_POST['action']=='delete')
+if (isset($_POST['action'])&&$_POST['action']=='delete_message')
 {
 	delete_message($connection);
 }
-
-
-
-
+if (isset($_POST['action'])&&$_POST['action']=='delete_comment') 
+{
+	delete_comment($connection,$_POST);	
+}
 ?>

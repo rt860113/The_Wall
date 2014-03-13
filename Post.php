@@ -26,6 +26,12 @@ if (!isset($_SESSION['success']))
 			<p class='error1_message'><?= $_SESSION['id1']['error1']?></p>	
 		<?php }
 		?>
+		<?php
+			if (isset($_SESSION['id1']['error2'])) 
+			{ ?>
+			<p class='error1_message'><?= $_SESSION['id1']['error2']?></p>	
+		<?php }
+		?>
 		<div class='center'>
 			<form action='process.php' method="post">
 				<p id='message_title'>Post your Message:</p>
@@ -66,31 +72,37 @@ if (!isset($_SESSION['success']))
 			// var_dump($result1);
 			while ($row1=mysqli_fetch_assoc($result1)) 
 			{ ?>
-				<div class='comment'>
+			<div class='comment'>
 				<h6><?= ucwords(strtolower($row1['first_name'])).' '.ucwords(strtolower($row1['last_name'])).' at '.$row1['c_date']?></h6>
 				<p class='comment'><?= $row1['comment']?></p>
 				</div>
 			<?php	} ?>
-			<form action="process.php" method="post" class='c_form'>
-				<p>Comments:</p>
-				<input type="hidden" name="action" value="comment">
-				<input type="hidden" name="message_id" value="<?php echo $row['m_id'];?>">
-				<input type='hidden' name='get_id' value="<?php echo $_GET['id'];?>">
-				<textarea type='text' name="comment"></textarea>
-				<input type="submit" value="Submit" class='c_button'>
-			</form>	
-		</div>
+				<form action="process.php" method="post" class='c_form'>
+					<p>Comments:</p>
+					<input type="hidden" name="action" value="comment">
+					<input type="hidden" name="message_id" value="<?php echo $row['m_id'];?>">
+			<!-- 		<input type='hidden' name='get_id' value="<?php echo $_GET['id'];?>"> -->
+					<textarea type='text' name="comment"></textarea>
+					<input type="submit" value="Submit" class='c_button'>
+				</form>	
+				<form action='process.php' method="post" class='C-form'>
+					<input type='hidden' name='action' value='delete_comment'>
+					<input type='hidden' name="message_id" value="<?php echo $row['m_id'];?>">
+					<input type='submit' value='Delete One comment'>
+				</form>
+			</div>
 			<?php	} ?>
 			
 		<?php }
 
 		?>
-		<form action='process.php' method=post>
-			<input type='hidden' name='action' value='delete'>
+		
+		<form action='process.php' method="post">
+			<input type='hidden' name='action' value='delete_message'>
 			<input type="submit" value='Delete One Message'>
 		</form>
 
-		<form action='process.php' method=post>
+		<form action='process.php' method="post">
 			<input type='hidden' name='action' value='log_out'>
 			<input type="submit" value='Log Out'>
 		</form>
@@ -125,10 +137,13 @@ if (!isset($_SESSION['success']))
 	}
 	.container{
 		margin-left: 150px;
+		border-bottom: 1px solid black;
 	}
 	.c_form{
 		position: relative;
 		left: 60%;
+		display: inline-block;
+		
 	}
 	.c_form textarea{
 		width: 400px;
